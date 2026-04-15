@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Site à Minuteurs</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 50px; }
+        .btn { padding: 15px 25px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 5px; color: white; }
+        .btn-pub { background-color: #007bff; }
+        .btn-check { background-color: #28a745; display: none; } /* Bouton vert de validation */
+        .btn-final { background-color: #dc3545; display: none; } /* 4ème bouton caché au début */
+        .timer { font-weight: bold; color: red; }
+        .success-icon { color: green; font-size: 24px; display: none; }
+    </style>
+</head>
+<body>
 
+    <h1>Effectuez les 3 étapes pour continuer</h1>
+
+    <div id="step1">
+        <button class="btn btn-pub" onclick="startTask(1, 27, 'https://www.google.com')">Bouton 1 (27s)</button>
+        <span id="timer1" class="timer"></span>
+        <span id="check1" class="success-icon"> ✅</span>
+    </div>
+
+    <div id="step2">
+        <button class="btn btn-pub" onclick="startTask(2, 45, 'https://www.bing.com')">Bouton 2 (45s)</button>
+        <span id="timer2" class="timer"></span>
+        <span id="check2" class="success-icon"> ✅</span>
+    </div>
+
+    <div id="step3">
+        <button class="btn btn-pub" onclick="startTask(3, 60, 'https://www.yahoo.com')">Bouton 3 (60s)</button>
+        <span id="timer3" class="timer"></span>
+        <span id="check3" class="success-icon"> ✅</span>
+    </div>
+
+    <hr>
+
+    <button id="finalBtn" class="btn btn-final" onclick="goToFinal()">Accéder au lien final</button>
+
+    <script>
+        let completedTasks = { 1: false, 2: false, 3: false };
+
+        function startTask(id, seconds, pubUrl) {
+            // Ouvre la pub dans un nouvel onglet
+            window.open(pubUrl, '_blank');
+
+            let timerElement = document.getElementById('timer' + id);
+            let timeLeft = seconds;
+
+            timerElement.innerText = " Attendez " + timeLeft + "s...";
+
+            let countdown = setInterval(function() {
+                timeLeft--;
+                timerElement.innerText = " Attendez " + timeLeft + "s...";
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerElement.style.display = 'none'; // Cache le texte du timer
+                    document.getElementById('check' + id).style.display = 'inline'; // Affiche l'icône verte
+                    completedTasks[id] = true;
+                    checkAllDone();
+                }
+            }, 1000);
+        }
+
+        function checkAllDone() {
+            // Vérifie si les 3 boutons sont terminés
+            if (completedTasks[1] && completedTasks[2] && completedTasks[3]) {
+                document.getElementById('finalBtn').style.display = 'inline-block';
+            }
+        }
+
+        function goToFinal() {
+            // On ajoutera ton lien ici plus tard
+            alert("Redirection vers le site final !");
+        }
+    </script>
+</body>
+</html>
