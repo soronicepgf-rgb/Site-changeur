@@ -2,80 +2,243 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Mon Site à Minuteurs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soronice Hub - Déverrouillage</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 50px; }
-        .btn { padding: 15px 25px; margin: 10px; font-size: 18px; cursor: pointer; border: none; border-radius: 5px; color: white; }
-        .btn-pub { background-color: #007bff; }
-        .btn-check { background-color: #28a745; display: none; } /* Bouton vert de validation */
-        .btn-final { background-color: #dc3545; display: none; } /* 4ème bouton caché au début */
-        .timer { font-weight: bold; color: red; }
-        .success-icon { color: green; font-size: 24px; display: none; }
+        /* =========================================
+           RÉINITIALISATION DE BASE
+           ========================================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* =========================================
+           ARRIÈRE-PLAN ANIMÉ (Style Delta)
+           ========================================= */
+        body {
+            /* Un dégradé sombre qui s'anime lentement */
+            background: linear-gradient(135deg, #0f0f13, #1c1c24, #0a0a0d, #252530);
+            background-size: 400% 400%;
+            animation: gradientMove 15s ease infinite;
+            
+            /* Centrage parfait de la carte */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #ffffff;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* =========================================
+           CONTENEUR PRINCIPAL (La Carte)
+           ========================================= */
+        .card-container {
+            background-color: rgba(30, 30, 36, 0.85); /* Fond légèrement transparent */
+            backdrop-filter: blur(10px); /* Effet verre flouté en arrière-plan */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        /* =========================================
+           IMAGE D'EN-TÊTE
+           ========================================= */
+        .header-image {
+            width: 100%;
+            height: 250px;
+            border-radius: 16px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            /* Une ombre interne pour l'image */
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* =========================================
+           TEXTES
+           ========================================= */
+        .title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #a0a0b0;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        /* =========================================
+           BOUTONS D'ACTION (ROUGES)
+           ========================================= */
+        .action-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px;
+            margin-bottom: 12px;
+            background-color: #e52d27; /* Beau rouge vif */
+            color: white;
+            border: none;
+            border-radius: 16px; /* Boutons bien ronds */
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(229, 45, 39, 0.3);
+            text-decoration: none;
+        }
+
+        /* Effet au survol des boutons rouges */
+        .action-button:hover {
+            background-color: #ff3b30;
+            transform: translateY(-3px); /* Le bouton monte un peu */
+            box-shadow: 0 8px 25px rgba(229, 45, 39, 0.5);
+        }
+
+        .action-button:active {
+            transform: translateY(1px); /* Effet de clic */
+        }
+
+        /* =========================================
+           SECTION PROGRESSION
+           ========================================= */
+        .progress-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            padding: 0 5px;
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #d0d0e0;
+            font-weight: 600;
+        }
+
+        .progress-badge {
+            background-color: #00e676; /* Vert éclatant */
+            color: #000;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* Barre de progression visuelle */
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%; /* Change ceci à 50% ou 100% via JS plus tard */
+            background-color: #00e676;
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        /* =========================================
+           BOUTON DE DÉVERROUILLAGE (GRISÉ)
+           ========================================= */
+        .unlock-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 20px;
+            background-color: #2c2c35;
+            color: #6a6a7c;
+            border: 2px solid #3a3a45;
+            border-radius: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: not-allowed; /* Curseur bloqué */
+            transition: all 0.3s ease;
+        }
+
+        /* Style quand le bouton sera activé (tu pourras l'utiliser plus tard) */
+        .unlock-button.active {
+            background-color: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .unlock-button.active:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+        }
     </style>
 </head>
 <body>
 
-    <h1>Effectuez les 3 étapes pour continuer</h1>
+    <div class="card-container">
+        
+        <img src="https://images.unsplash.com/photo-1505635552518-3448ff116af3?q=80&w=1000&auto=format&fit=crop" alt="Image Sombre" class="header-image">
+        
+        <h1 class="title">
+            <span>🔐</span> Mots de passe SORONICE HUB
+        </h1>
+        <p class="subtitle">Terminez les actions pour débloquer</p>
 
-    <div id="step1">
-        <button class="btn btn-pub" onclick="startTask(1, 27, 'https://www.google.com')">Bouton 1 (27s)</button>
-        <span id="timer1" class="timer"></span>
-        <span id="check1" class="success-icon"> ✅</span>
+        <a href="#" class="action-button">
+            <i class="fa-brands fa-youtube"></i>
+            Regardez la vidéo
+        </a>
+
+        <a href="#" class="action-button">
+            <i class="fa-brands fa-youtube"></i>
+            Regardez la vidéo
+        </a>
+
+        <div class="progress-section">
+            <span class="progress-text">Déverrouiller le progrès</span>
+            <span class="progress-badge">0/2 terminé</span>
+        </div>
+        
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill"></div>
+        </div>
+
+        <button class="unlock-button">
+            <i class="fa-solid fa-lock"></i>
+            Lien de déverrouillage
+        </button>
+
     </div>
 
-    <div id="step2">
-        <button class="btn btn-pub" onclick="startTask(2, 45, 'https://www.bing.com')">Bouton 2 (45s)</button>
-        <span id="timer2" class="timer"></span>
-        <span id="check2" class="success-icon"> ✅</span>
-    </div>
-
-    <div id="step3">
-        <button class="btn btn-pub" onclick="startTask(3, 60, 'https://www.yahoo.com')">Bouton 3 (60s)</button>
-        <span id="timer3" class="timer"></span>
-        <span id="check3" class="success-icon"> ✅</span>
-    </div>
-
-    <hr>
-
-    <button id="finalBtn" class="btn btn-final" onclick="goToFinal()">Accéder au lien final</button>
-
-    <script>
-        let completedTasks = { 1: false, 2: false, 3: false };
-
-        function startTask(id, seconds, pubUrl) {
-            // Ouvre la pub dans un nouvel onglet
-            window.open(pubUrl, '_blank');
-
-            let timerElement = document.getElementById('timer' + id);
-            let timeLeft = seconds;
-
-            timerElement.innerText = " Attendez " + timeLeft + "s...";
-
-            let countdown = setInterval(function() {
-                timeLeft--;
-                timerElement.innerText = " Attendez " + timeLeft + "s...";
-
-                if (timeLeft <= 0) {
-                    clearInterval(countdown);
-                    timerElement.style.display = 'none'; // Cache le texte du timer
-                    document.getElementById('check' + id).style.display = 'inline'; // Affiche l'icône verte
-                    completedTasks[id] = true;
-                    checkAllDone();
-                }
-            }, 1000);
-        }
-
-        function checkAllDone() {
-            // Vérifie si les 3 boutons sont terminés
-            if (completedTasks[1] && completedTasks[2] && completedTasks[3]) {
-                document.getElementById('finalBtn').style.display = 'inline-block';
-            }
-        }
-
-        function goToFinal() {
-            // On ajoutera ton lien ici plus tard
-            alert("Redirection vers le site final !");
-        }
-    </script>
 </body>
 </html>
